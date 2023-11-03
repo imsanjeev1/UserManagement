@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>BootstrapDash Wizard</title>
+  <link href="https://fonts.googleapis.com/css?family=Karla:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.8.95/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/bd-wizard.css">
+  <link rel="stylesheet" href="/static/scss/bd-wizard.scss">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css'>
+</head>
+<body>
+<span>Hello,{{ request.user }}</span>
+<span><a href="{% url 'logout' %}">Logout</a> </span>
+<span>          7777777777{{db_data1}}
+</span>
+
+{#<img src="/static/images/base-header.png" style="width: 170px;height: 82px;margin: 15px 75px 0;"/>#}
+  <main class="my-5">
+    <div class="container">
+      <div id="wizard">
+{#        <h3>#}
+{#          <div class="media">#}
+{#            <div class="bd-wizard-step-icon"><i class="mdi mdi-file-outline"></i></div>#}
+{#            <div class="media-body">#}
+{#              <div class="bd-wizard-step-title">Upload</div>#}
+{#              <div class="bd-wizard-step-subtitle">Step 1</div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </h3>#}
+        <section>
+          <div class="content-wrapper">
+            <h4 class="section-heading">Upload File</h4>
+            <div class="row">
+              <div class="form-group col-md-6">
+                  <div class="mt-4">
+                  <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                      <input type="file" name="upload_csv_file">File Format:csv<br><br>
+                      <input type="submit" value="Upload file">
+                  </form>
+                  </div>
+                  <div>
+{#                    <div class="circle" style="width: 100%;margin-left: 280px;">#}
+{#                      <div class="checkmark" style="margin-top: -90px;"><i class="fa fa-check-circle" style="font-size:90px;color:#81c038;"></i><p style="margin-left: 93px;margin-top: -58px;width: 282px;">File Succefully uploaded for scrubbing</p></div>#}
+{#                    </div>#}
+                  </div>
+              </div>
+            </div>
+          </div>
+        </section>
+{#        <h3>#}
+{#          <div class="media">#}
+{#            <div class="bd-wizard-step-icon"><i class="mdi mdi-select"></i></div>#}
+{#            <div class="media-body">#}
+{#              <div class="bd-wizard-step-title">Select Field</div>#}
+{#              <div class="bd-wizard-step-subtitle">Step 2</div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </h3>#}
+{#        <section>#}
+{#          <div class="content-wrapper">#}
+{#            <h4 data-toggle="tooltip" class="section-heading" style="float:right;font-size: 14px;" title="Names Email addresses Addresses/Postal codes (US, GB, CA) Credit card numbers Dates of birth URLs Phone numbers Username and password combinations Skype/twitter usernames Social security numbers(US and GB national insurance numbers) Tax numbers(GB) Driving licence numbers(GB)"><i class='bi bi-info-circle'>&nbsp;&nbsp;</i>PII Data Supported for scrubbing List</h4>#}
+{##}
+{#            <h4 class="section-heading">Select Column to be scrubbed </h4>#}
+{#            <div class="row">#}
+              <input name="uploaded_raw_file" id="uploaded_raw_file" value="" type="hidden"/>
+{#              <div class="form-group col-md-6" id="csv_headers">#}
+{#                {% for column_name in column %}#}
+{#                  <input type="checkbox" name="check"+column_name />{{ column_name }}<br/>#}
+{#                {% endfor %}#}
+{#              </div>#}
+{#              <div class="form-group col-md-6">#}
+{##}
+{#              <div></div>#}
+{#              </div>#}
+{#            </div>#}
+{#            <div class="row">#}
+{#              <div class="form-group col-md-6">#}
+{#              </div>#}
+{#              <div class="form-group col-md-6">#}
+{#             <a href="#next" id="apply_scrubs_headers" style="text-decoration: none;display: inline-block;border-radius: 0px;background-color: lightgrey;padding: 16px color: #fff;font-style:15px;font-weight: bold;">Apply Scrub</a>#}
+{#              </div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </section>#}
+{#        <h3>#}
+{#          <div class="media">#}
+{#            <div class="bd-wizard-step-icon"><i class="mdi mdi-emoticon-outline"></i></div>#}
+{#            <div class="media-body">#}
+{#              <div class="bd-wizard-step-title">Download Scrubbed FIle</div>#}
+{#              <div class="bd-wizard-step-subtitle">Step 4</div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </h3>#}
+{#        <section>#}
+{#          <div class="content-wrapper">#}
+{#            <h4 class="section-heading mb-5">Scrubbed File Ready for Download</h4>#}
+{#            <div class="form-check">#}
+{#              <label class="form-check-label">#}
+{#                            <div><a href="#next" id="download_scrubbed_file">Download</a></div>#}
+{#              </label>#}
+{#            </div>#}
+{#          </div>#}
+{#        </section>#}
+      </div>
+    </div>
+  </main>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="/static/js/jquery.steps.min.js"></script>
+  <script src="/static/js/bd-wizard.js"></script>
+<script>
+
+function upload(event) {
+
+      event.preventDefault();
+      var data = new FormData($('form').get(0));
+      $.ajax({
+          url: '{% url "file_upload" %}',
+          type: $(this).attr('method'),
+          data: data,
+          cache: false,
+          processData: false,
+          contentType: false,
+          success: function(data) {
+              console.log("DATA>><<<<<<<<",data);
+            if (data.success) {
+//                alert('success');
+                $('#uploaded_raw_file').val(data.filename);
+                get_scrub_headers(data.filename);
+                $('.checkmark').show();
+                $('.actions').show();
+                $(".actions ul li:has(a[href='#next'])").show();
+//                if($(".actions ul li:has(a[href='#next'])").val()==0){$('.actions').hide()};
+
+              }
+          }
+      });
+      return false;
+      }
+
+$(function() {
+        $('form').submit(upload);
+    });
+</script>
+
+</body>
+</html>
