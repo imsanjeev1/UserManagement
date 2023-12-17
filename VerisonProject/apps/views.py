@@ -4,8 +4,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .forms import LoginForm, RegisterForm
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
-from .models import EmployeeList
-from .resources import EmployeeDataResources
+from .models import Employees
+from .resources import csvfiledataResources
 from django.contrib import messages
 import csv,io
 from tablib import Dataset
@@ -15,7 +15,7 @@ def login1(request):
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect("index")
+        return redirect("home   ")
     else:
         if request.method == 'GET':
             form = RegisterForm()
@@ -31,77 +31,105 @@ def register(request):
                 return HttpResponseRedirect("/register")
             else:
                 return render(request, 'register.html', {'form': form})
-
+@login_required(login_url='login')
 def sign_in(request):
     if request.user.is_authenticated:
-        return redirect("index")
+        return redirect("employee_hierarchy")
     else:
         if request.method =="POST":
             username = request.POST.get("username")
             password = request.POST.get("password")
+            # if username or password is "":
+            #     messages.warning(request, "Username OR password should not be blank")
+            #     return redirect("login")
             user = authenticate(request,username=username,password=password)
             if user is not None:
                 login(request,user)
-                return redirect("index")
+                return redirect("home")
             else:
-                messages.info(request,"Username OR password do not match")
+                messages.warning(request,"Username OR password do not match")
                 return render(request, "login.html")
         context={}
         return render(request, "login.html")
 def sign_out(request):
     logout(request)
-    return render(request, "login.html")
+    # return render(request, "login.html")
+    return redirect("login")
 
 @login_required(login_url='login')
 def home(request):
-    return render(request, "index.html")
+    data = Employees.objects.all()
+    return render(request, "home.html", {'db_data': data,'page_type': "Employee List"})
 
 def upload_csv_data(request):
     import time
-    # import sys
-    # sys.path.append("D:\pycharm-debug")
-    # import pydevd
-    # pydevd.settrace('localhost', port=6086, stdoutToServer=True, stderrToServer=True)
-    import pandas as pd
     if request.method == 'POST':
-        customer_resources=EmployeeDataResources()
+        customer_resources=csvfiledataResources()
         dataset=Dataset()
         csv_file = request.FILES['upload_csv_file']
         if not csv_file.name.endswith('.csv'):
-            return JsonResponse({'error': 'File is not a CSV'})
-
-        # filename = request.FILES['data_file']
-        # print(">>.", filename)
-        # data_read = pd.read_csv(csv_file, delimiter=',')
+            messages.warning(request,'File is not a CSV')
+            return HttpResponseRedirect("/file_upload")
+            # return render(request,"file_upload.html")
+            # return JsonResponse({'error': 'File is not a CSV'})
         data_read = csv_file.read().decode('UTF-8')
         io_string= io.StringIO(data_read)
         next(io_string)
         for column in csv.reader(io_string,delimiter=',',quotechar="|"):
-            created = EmployeesList.objects.update_or_create(
-                UniqueIdentifier=column[0],
-                Name=column[1],
-                ReportsTo=column[2],
-                Designation=column[3]
+            created = Employees.objects.update_or_create(
+                uniqueIdentifier=column[0],
+                name=column[1],
+                reportsTo=column[2],
+                designation=column[3],
+                address=column[4],
+                organisationName=column[5],
+                remarks=column[6]
 
             )
-        # name = data_read["Name"]
-        # address = data_read["Address"]
-        # phone = data_read["Phone"]
-        # email = data_read["Email"]
-        # column_names = list(data_read.columns)
-        # Save the uploaded file to a specified location on the server
-        actual_file= str(time.time())+'_'+csv_file.name
-        # with open('./media/'+actual_file, 'wb+') as destination:
-        # with open('./media/scrub/csv_file.csv', 'wb+') as destination:
-        #     for chunk in csv_file.chunks():
-        #         destination.write(chunk)
-    #     return JsonResponse({'success': True, 'filename':actual_file})
-    # else:
-    #     return JsonResponse({'error': 'POST request required'})
-    return render(request, "index.html")
+    return render(request, "file_upload.html",{'page_type':"File Upload"})
+    # return HttpResponseRedirect("/file_upload",{'page_type':"File Upload"})
 
 def csv_data(request):
-    data = EmployeeList.objects.all()
-    data1 = [x for x in data]
-    print("Backend Data>> ", data)
-    return render(request, "csv_upload.html", {'db_data1': data})
+    data = Employees.objects.all()
+    return render(request, "home.html", {'db_data': data})
+
+def download_file(request):
+    filename ="testfile.csv"
+    import time
+    data = Employees.objects.all()
+    write_file = './media/' + filename
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment'; filename=write_file
+
+    writer = csv.writer(response)
+    writer.writerow(
+        ['UniqueIdentifier', 'Name', 'Designation', 'ReportsTo'])
+
+    empdata = Employees.objects.all().values_list('UniqueIdentifier', 'Name', 'Designation', 'ReportsTo')
+    for info in empdata:
+        writer.writerow(info)
+
+    return JsonResponse({'success': True})
+
+def employee_hierarchy(request):
+    return render(request, "emp_hierarchy.html")
+
+def employee_hierarchy_data(request):
+    data = get_employees()
+
+    return JsonResponse({'success': True, 'data': data})
+
+def get_employees():
+    parent = Employees.objects.filter(reportsTo='').first()
+    parent_data = {"name": parent.name, "title": parent.designation}
+    parent_data['children'] = get_child(parent, parent_data)
+    return parent_data
+
+
+def get_child(parent, result):
+    children = []
+    childs = Employees.objects.filter(reportsTo=parent.name)
+    for child in childs:
+        d_child = {"name": child.name, "title": child.designation, "children": get_child(child, result)}
+        children.append(d_child)
+    return children
