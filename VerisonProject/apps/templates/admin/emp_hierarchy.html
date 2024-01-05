@@ -1,0 +1,38 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+    <style>
+        #chart-container {
+            font-family: Arial;
+            height: 420px;
+            border: 2px dashed #aaa;
+            border-radius: 5px;
+            overflow: auto;
+            text-align: center;
+        }
+
+        #github-link {
+            position: fixed;
+            right: 10px;
+            font-size: 3em;
+        }
+    ul li {
+    list-style-type:'';
+    padding: 0;
+}
+    </style>
+    <link href="/static/css/orgchart.css" rel="stylesheet"/>
+    <script src="/static/js/Jquery-3.7.1.js"></script>
+    <script src="/static/js/orgchart.js"></script>
+    <script src="/static/js/data.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            employee_hierarchy_data();
+        });
+
+    </script>
+
+    <div id="chart-container" style="border: none;"></div>
+    <a id="hierarchy-id" href="#" target="_blank"><i class="fa fa-github-square"></i></a>
+{% endblock %}

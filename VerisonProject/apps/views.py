@@ -34,7 +34,8 @@ def register(request):
 @login_required(login_url='login')
 def sign_in(request):
     if request.user.is_authenticated:
-        return redirect("employee_hierarchy")
+        pass
+        # return redirect("admin")
     else:
         if request.method =="POST":
             username = request.POST.get("username")
@@ -111,12 +112,14 @@ def download_file(request):
 
     return JsonResponse({'success': True})
 
+@login_required(login_url='/login/?next=/')
 def employee_hierarchy(request):
-    return render(request, "emp_hierarchy.html")
+    return render(request, "admin/emp_hierarchy.html")
 
+@login_required(login_url='/login/?next=/')
 def employee_hierarchy_data(request):
-    data = get_employees()
 
+    data = get_employees()
     return JsonResponse({'success': True, 'data': data})
 
 def get_employees():
@@ -124,7 +127,6 @@ def get_employees():
     parent_data = {"name": parent.name, "title": parent.designation}
     parent_data['children'] = get_child(parent, parent_data)
     return parent_data
-
 
 def get_child(parent, result):
     children = []

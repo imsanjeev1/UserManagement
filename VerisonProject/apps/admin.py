@@ -7,6 +7,9 @@ from django.contrib import messages
 from django.urls import path
 from django.shortcuts import render
 from django import forms
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 class EmpResource(resources.ModelResource):
     class Meta:
         model = Employees
@@ -16,8 +19,8 @@ class EmpResource(resources.ModelResource):
 
 # Register your models here.
 class FileUpload(forms.Form):
-    view_on_site = False
-    site_url = None
+    # view_on_site = False
+    # site_url = None
     select_csv_File=forms.FileField()
 
 class EmployeeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
@@ -30,6 +33,8 @@ class EmployeeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
               'status']
     list_per_page = 10
     list_max_show_all = 6
+    admin.site.site_url = "/hierarchy/data"
+    # admin.site.site_url = ""
 
     actions = ['activate', 'deactivate']
 
@@ -41,21 +46,4 @@ class EmployeeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         queryset.update(status=False)
         messages.warning(request, "User successfully deactivated.")
 
-    def get_urls(self):
-        urls=super().get_urls()
-        # print("GET URLS>>>",urls)
-        new_urls=[path('upload-csv/',self.upload_csv),]
-        return new_urls + urls
-
-    def upload_csv(self,request):
-        form = FileUpload()
-        upload_form = {'form': form}
-        return render(request, "admin/csv_upload.html",upload_form)
-    #
-
 admin.site.register(Employees,EmployeeAdmin)
-# class Media:
-#     js = (
-#         '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jquery
-#         # 'js/admin.js',  # project static folder
-#     )
